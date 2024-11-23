@@ -1,4 +1,5 @@
 #include "Vector.h"
+#include <string>
 Vector::Vector(int n)
 {
 	if (n < 2)
@@ -60,7 +61,7 @@ int Vector::pop_back()
 //change the capacity
 void Vector::reserve(const int n)
 {
-	if (n < _capacity)
+	if (n <= _capacity)
 	{
 		return;
 	}
@@ -77,10 +78,6 @@ void Vector::reserve(const int n)
 //change _size to n, unless n is greater than the vector's capacity
 void Vector::resize(const int n)
 {
-	if (n > _capacity || n < 0)
-	{
-		return;
-	}
 	resize(n, 0);
 
 }
@@ -95,6 +92,10 @@ void Vector::assign(const int val)
 //if new elements added their value is val
 void Vector::resize(const int n, const int& val)
 {
+	if (n > _capacity || n < 0)
+	{
+		reserve(n);
+	}
 	if (n > _size)
 	{
 		for (int i = _size; i < n; i++)
@@ -103,4 +104,104 @@ void Vector::resize(const int n, const int& val)
 		}
 	}
 	_size = n;
+}
+Vector::Vector(const Vector& other)
+{
+	_size = other._size;
+	_capacity = other._capacity;
+	_resizeFactor = other._resizeFactor;
+	_elements = new int[_capacity];
+	for (int i = 0; i < _size; i++) 
+	{
+		_elements[i] = other._elements[i];
+	}
+}
+
+
+Vector& Vector::operator=(const Vector& other)
+{
+	if (this == &other)
+	{
+		return *this;
+	}
+	_size = other._size;
+	_capacity = other._capacity;
+	_resizeFactor = other._resizeFactor;
+	if (_elements != nullptr)
+	{
+		delete[] _elements;
+	}
+	_elements = new int[_capacity];
+	for (int i = 0; i < _size; i++)
+	{
+		_elements[i] = other._elements[i];
+	}
+	return *this;
+
+}
+int& Vector::operator[](int n) const
+{
+	if (n > _size - 1 || n < 0) // size - 1 is the last element
+	{
+		std::cout << "Cant acess element not in range\n";
+		return _elements[0];
+	}
+	return _elements[n];
+
+}
+// adds the content of the other vector to this vector
+Vector& Vector::operator+=(const Vector& other)
+{
+	*this = *this + other;
+	return *this;
+}
+// substracts the content of the other vector from this vector
+Vector& Vector::operator-=(const Vector& other)
+{
+	*this = *this - other;
+	return *this;
+}
+// returns a vector that contains the result of adding the other vector to this vector
+Vector Vector:: operator+(const Vector& other) const
+{
+	Vector v3(_capacity > other._capacity ? _capacity : other._capacity);
+	v3._size = (_size > other._size) ? _size : other._size;
+	for (int i = 0; i < v3._capacity; i++)
+	{
+		int thisElement = (i < _size) ? _elements[i] : 0; // if out of bounds add 0
+		int otherElement = (i < other._size) ? other._elements[i] : 0;
+		v3._elements[i] = thisElement + otherElement;
+	}
+	return v3;
+}
+// returns a vector that contains the result of substratcting the other vector from this vector
+Vector Vector::operator-(const Vector& other) const
+{
+	Vector v3(_capacity > other._capacity ? _capacity : other._capacity);
+	v3._size = (_size > other._size) ? _size : other._size;
+	for (int i = 0; i < v3._capacity; i++)
+	{
+		int thisElement = (i < _size) ? _elements[i] : 0; // if out of bounds add 0
+		int otherElement = (i < other._size) ? other._elements[i] : 0;
+		v3._elements[i] = thisElement - otherElement;
+	}
+	return v3;
+}
+// stream insertion - insert a vector stream to a given stream
+std::ostream& operator<<(std::ostream& os, const Vector& v)
+{
+	/*Vector Info : \nCapacity is{ capacity }\nSize is{ size } data is{ val1, val2, val3,...,valn }\n*/
+	std::string info = "";
+	info += "Vector info:\n";
+	info += "Capacity is " + std::to_string(v._capacity) + "\n";
+	info += "Size is " + std::to_string(v._size) + "\n";
+	info += "{";
+	for (int i = 0; i < v._size - 1; i++)
+	{
+		info += std::to_string(v._elements[i]) + ",";
+		
+	}
+	info += std::to_string(v._elements[v._size - 1]) + "}\n";
+	os << info;
+	return os;
 }

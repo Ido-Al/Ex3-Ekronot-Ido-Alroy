@@ -32,7 +32,9 @@ public:
 
 	//C
 	//The big three (d'tor is above)
+	// Creates a new vector using another vector(deep copy)
 	Vector(const Vector& other);
+	// changes an exsiting vecotr to be the same as another vector(deep copy)
 	Vector& operator=(const Vector& other);
 
 	//D
