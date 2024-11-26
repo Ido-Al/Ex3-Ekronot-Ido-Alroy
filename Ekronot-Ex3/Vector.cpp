@@ -53,6 +53,7 @@ int Vector::pop_back()
 {
 	if (_size == 0)
 	{
+		std::cout << "cant pop an empty vector\n";
 		return -9999; // error
 	}
 	_size--;
